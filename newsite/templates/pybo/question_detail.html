@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- 질문 -->
+<div class="container my-3">
+    <h2 class="border-bottom py-2">{{ question.subject }}</h2> <!-- 질문_제목 -->
+    <div class="card my-3">
+        <div class="card-body">
+            <div class="card-text" style="white-space: pre-line;">{{ question.content }}</div> <!-- 질문_내용 -->
+            <div class="d-flex justify-content-end">
+                <div class="badge badge-light p-2">
+                    {{ question.create_date }} <!-- 질문_작성일자 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="border-bottom my-3 py-2">{{question.answer_set.count}}개의 답변이 있습니다.</h5> <!-- 답변_조회_개수 -->
+
+    <!-- 답변_조회_반복문시작 -->
+    {% for answer in question.answer_set.all %}
+    <div class="card my-3">
+        <div class="card-body">
+            <div class="card-text" style="white-space: pre-line;">{{ answer.content }}</div> <!-- 답변_조회_내용 -->
+            <div class="d-flex justify-content-end">
+                <div class="badge badge-light p-2">
+                    {{ answer.create_date }} <!-- 답변_조회_작성일자 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 답변_조회_반복문끝 -->
+    {% endfor %}
+
+    <!-- 답변_작성 -->
+    <form action="{% url 'pybo:answer_create' question.id %}" method="post" class="my-3">
+        {% csrf_token %}
+        <!-- 답변_작성_오류화면시작 -->
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+        {% for field in form %}
+            {% if field.errors %}
+            <strong>{{ field.label }}</strong>
+            {{ field.errors }}
+            {% endif %}
+        {% endfor %}
+        </div>
+        {% endif %}
+        <!-- 답변_작성_오류화면끝 -->
+        <!-- 답변_작성폼 -->
+        <div class="form-group">
+            <textarea name="content" id="content" class="form-control" rows="10"></textarea>
+        </div>
+
+        <!-- 답변_작성_등록버튼 -->
+        <input type="submit" value="답변등록" class="btn btn-primary">
+    </form>
+</div>
+{% endblock %}
